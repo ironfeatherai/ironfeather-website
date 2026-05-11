@@ -1,0 +1,1034 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>IronFeather AI — Heavy lifting, lightly done.</title>
+    <meta
+      name="description"
+      content="IronFeather AI helps owner-operators of small and mid-sized businesses use AI to grow revenue, save time, and reduce stress — without the jargon, the buzzwords, or the bloated software stack."
+    />
+
+    <!-- Tailwind via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Fonts: Fraunces (display) + Inter (body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      // Tailwind brand tokens (locked palette from brand-spec.md)
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              ink: "#0f0e0b",
+              ember: "#bf5104",
+              cream: "#fbf8f1",
+              sand: "#f4eeda",
+              iron: "#5b6373",
+              divider: "#d8d5cb",
+              charcoal: "#13151c",
+            },
+            fontFamily: {
+              display: ['"Source Serif 4"', "ui-serif", "Georgia", "serif"],
+              sans: ['"Inter"', "ui-sans-serif", "system-ui", "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 5rem;
+      }
+      body {
+        font-family: "Inter", system-ui, sans-serif;
+        background-color: #fbf8f1;
+        color: #0f0e0b;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      .font-display {
+        font-family: "Source Serif 4", Georgia, serif;
+        font-optical-sizing: auto;
+        letter-spacing: -0.01em;
+        /* Disable Fraunces decorative ligatures (the "funny f" issue). Keeps standard ligatures only. */
+        font-feature-settings: "liga" 1, "clig" 1, "dlig" 0, "hlig" 0, "calt" 0, "ss01" 0, "ss02" 0, "ss03" 0, "ss04" 0;
+        font-variant-ligatures: common-ligatures no-discretionary-ligatures no-historical-ligatures;
+      }
+      .eyebrow {
+        font-family: "Inter", sans-serif;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        font-size: 0.72rem;
+        color: #5b6373;
+      }
+      .btn-primary {
+        background-color: #bf5104;
+        color: #13151c;
+        transition: transform 0.15s ease, background-color 0.15s ease,
+          box-shadow 0.15s ease;
+      }
+      .btn-primary:hover {
+        background-color: #d4810a;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 24px -10px rgba(232, 147, 24, 0.55);
+      }
+      .btn-secondary {
+        border: 1px solid #0f0e0b;
+        color: #0f0e0b;
+        transition: background-color 0.15s ease, color 0.15s ease;
+      }
+      .btn-secondary:hover {
+        background-color: #0f0e0b;
+        color: #fbf8f1;
+      }
+      .nav-link {
+        color: #0f0e0b;
+        position: relative;
+        transition: color 0.15s ease;
+      }
+      .nav-link::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: -4px;
+        height: 2px;
+        width: 0;
+        background-color: #bf5104;
+        transition: width 0.2s ease;
+      }
+      .nav-link:hover::after {
+        width: 100%;
+      }
+      .card {
+        background-color: #fbf8f1;
+        border: 1px solid #d8d5cb;
+        transition: transform 0.2s ease, box-shadow 0.2s ease,
+          border-color 0.2s ease;
+      }
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 32px -16px rgba(15, 14, 11, 0.18);
+        border-color: #c8c3b3;
+      }
+      .badge-live {
+        background-color: rgba(232, 147, 24, 0.12);
+        color: #b9750a;
+        border: 1px solid rgba(232, 147, 24, 0.35);
+      }
+      .badge-conditional {
+        background-color: rgba(91, 99, 115, 0.1);
+        color: #5b6373;
+        border: 1px solid rgba(91, 99, 115, 0.3);
+      }
+      .step-num {
+        font-family: "Source Serif 4", Georgia, serif;
+        color: #bf5104;
+      }
+      /* Tasteful "AI" inline accent for body copy */
+      .ai-accent {
+        color: #bf5104;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+
+  <body class="bg-cream text-ink">
+    <!-- Private staging banner -->
+    <div
+      class="bg-charcoal text-cream/80 text-xs sm:text-[0.78rem] py-2 px-4 text-center tracking-wide"
+    >
+      Private staging build · not yet public · last updated May 2026
+    </div>
+
+    <!-- Nav header -->
+    <header
+      class="sticky top-0 z-40 bg-cream/90 backdrop-blur border-b border-divider"
+    >
+      <div
+        class="max-w-7xl mx-auto px-5 sm:px-8 py-4 flex items-center justify-between"
+      >
+        <a href="#top" class="flex items-center gap-3" aria-label="IronFeather AI home">
+          <img
+            src="assets/LOGO-LOCKED.png"
+            alt="IronFeather AI"
+            class="h-14 sm:h-16 w-auto"
+          />
+        </a>
+
+        <nav
+          class="hidden md:flex items-center gap-8 text-[0.95rem] font-medium"
+          aria-label="Primary"
+        >
+          <a href="#what-we-build" class="nav-link">What we build</a>
+          <a href="#how-it-works" class="nav-link">How it works</a>
+          <a href="#why-us" class="nav-link">Why us</a>
+          <a href="#code-of-conduct" class="nav-link">Code of Conduct</a>
+          <a
+            href="mailto:hello@ironfeather.ai?subject=Discovery%20call%20request"
+            class="btn-primary inline-flex items-center px-4 py-2 rounded-md font-semibold text-sm"
+          >
+            Book a call
+          </a>
+        </nav>
+
+        <!-- Mobile: simple "Book" CTA only -->
+        <a
+          href="mailto:hello@ironfeather.ai?subject=Discovery%20call%20request"
+          class="md:hidden btn-primary inline-flex items-center px-3 py-1.5 rounded-md font-semibold text-sm"
+        >
+          Book a call
+        </a>
+      </div>
+
+      <!-- Mobile in-page nav strip -->
+      <nav
+        class="md:hidden border-t border-divider bg-cream/95 overflow-x-auto"
+        aria-label="Mobile sections"
+      >
+        <ul
+          class="flex gap-5 px-5 py-2 text-sm whitespace-nowrap text-iron"
+        >
+          <li><a href="#what-we-build" class="hover:text-ink">What we build</a></li>
+          <li><a href="#how-it-works" class="hover:text-ink">How it works</a></li>
+          <li><a href="#why-us" class="hover:text-ink">Why us</a></li>
+          <li><a href="#meet-friday" class="hover:text-ink">Meet Friday</a></li>
+          <li><a href="#code-of-conduct" class="hover:text-ink">Conduct</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="top">
+      <!-- HERO -->
+      <section class="bg-cream">
+        <div
+          class="max-w-7xl mx-auto px-5 sm:px-8 pt-14 pb-16 md:pt-24 md:pb-28"
+        >
+          <div class="grid md:grid-cols-12 gap-10 md:gap-14 items-center">
+            <!-- Copy -->
+            <div class="md:col-span-7 order-2 md:order-1">
+              <div class="eyebrow mb-5"><span class="inline-block w-2 h-2 rounded-full bg-ember mr-2 -translate-y-px align-middle"></span>Operator-led AI · Atlantic Canada</div>
+              <h1
+                class="font-display text-[2.6rem] leading-[1.05] sm:text-5xl md:text-[4rem] md:leading-[1.02] font-medium tracking-tight text-ink"
+              >
+                AI for owner-operators.
+                <br class="hidden sm:block" />
+                Heavy lifting,
+                <span class="text-ember">lightly done.</span>
+              </h1>
+              <div class="mt-6 h-1 w-24 bg-ember rounded-full" aria-hidden="true"></div>
+
+              <p
+                class="mt-7 text-lg md:text-xl text-iron max-w-xl leading-relaxed"
+              >
+                We're not pitching from the outside. We're operators who happen to
+                know <span class="ai-accent">AI</span> — and we sit on
+                your side of the table. Fixed price. Fixed timeline. No meter
+                running.
+              </p>
+
+              <div class="mt-9 flex flex-wrap items-center gap-4">
+                <a
+                  href="mailto:hello@ironfeather.ai?subject=Discovery%20call%20request"
+                  class="btn-primary inline-flex items-center gap-2 px-6 py-3.5 rounded-md font-semibold"
+                >
+                  Book a 30-minute discovery call
+                  <span aria-hidden="true">→</span>
+                </a>
+                <a
+                  href="#what-we-build"
+                  class="btn-secondary inline-flex items-center px-6 py-3.5 rounded-md font-semibold"
+                >
+                  See what we build
+                </a>
+              </div>
+
+              <p class="mt-6 text-sm text-iron">
+                No deck. No pitch. Twelve good questions and an honest answer.
+              </p>
+            </div>
+
+            <!-- Friday video -->
+            <div class="md:col-span-5 order-1 md:order-2">
+              <div
+                id="friday-video-wrap"
+                class="relative mx-auto max-w-md md:max-w-none group"
+              >
+                <div
+                  class="absolute -inset-3 rounded-2xl bg-sand -z-10"
+                  aria-hidden="true"
+                ></div>
+                <video
+                  id="friday-hero-video"
+                  class="w-full h-auto rounded-2xl shadow-[0_24px_60px_-30px_rgba(15,14,11,0.45)] object-cover bg-charcoal"
+                  poster="assets/FRIDAY-CANON-BRANDED.jpg"
+                  playsinline
+                  autoplay
+                  muted
+                  loop
+                  preload="auto"
+                  aria-label="Friday — IronFeather's AI partner, speaking"
+                >
+                  <source src="friday-pitch.mp4" type="video/mp4" />
+                  <track
+                    label="English"
+                    kind="subtitles"
+                    srclang="en"
+                    src="friday-pitch.vtt?v=2"
+                    default
+                  />
+                  Your browser doesn't support video. Friday says hi anyway.
+                </video>
+
+                <!-- Meet badge -->
+                <div
+                  class="absolute top-4 left-4 bg-cream/95 backdrop-blur border border-divider rounded-md px-3 py-2 text-xs pointer-events-none"
+                >
+                  <span class="eyebrow block leading-none mb-0.5">Meet</span>
+                  <span class="font-display text-base leading-none">F.R.I.D.A.Y.</span>
+                </div>
+
+                <!-- Unmute / Play controls -->
+                <button
+                  id="friday-sound-btn"
+                  type="button"
+                  aria-label="Unmute Friday"
+                  class="absolute bottom-4 right-4 inline-flex items-center gap-2 bg-ink/85 text-cream backdrop-blur px-4 py-2.5 rounded-full text-sm font-semibold shadow-lg hover:bg-ember transition-colors"
+                >
+                  <span id="friday-sound-icon" aria-hidden="true">🔇</span>
+                  <span id="friday-sound-label">Unmute</span>
+                </button>
+
+                <!-- Live caption strip (CC always visible as a subtle band) -->
+                <div
+                  id="friday-cc-strip"
+                  class="absolute left-3 right-3 bottom-3 mb-12 sm:mb-14 text-cream text-sm sm:text-base leading-snug bg-ink/55 backdrop-blur-sm px-3 py-2 rounded-md text-center pointer-events-none min-h-[2.25rem]"
+                  aria-live="polite"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- WHAT WE BUILD -->
+      <section id="what-we-build" class="bg-sand">
+        <div
+          class="max-w-7xl mx-auto px-5 sm:px-8 py-20 md:py-28"
+        >
+          <div class="max-w-3xl">
+            <div class="eyebrow mb-4">What we build</div>
+            <h2
+              class="font-display text-3xl sm:text-4xl md:text-5xl font-medium leading-tight text-ink"
+            >
+              Five productized Sprints.
+              <span class="text-iron">Pick one. Ship it.</span>
+            </h2>
+            <p class="mt-5 text-iron text-lg leading-relaxed">
+              Every Sprint is a fixed-fee, fixed-timeline build. We design,
+              deploy, train your team, and either hand off the system or stay
+              on monthly to run it for you.
+            </p>
+          </div>
+
+          <!-- Sprint grid -->
+          <div class="mt-12 grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <!-- Sprint 1 -->
+            <article class="card rounded-xl p-7 flex flex-col">
+              <div
+                class="badge-live inline-flex self-start items-center gap-1.5 px-2.5 py-1 rounded-full text-[0.7rem] font-semibold tracking-wide mb-4"
+              >
+                <span
+                  class="w-1.5 h-1.5 rounded-full bg-ember inline-block animate-pulse"
+                ></span>
+                In active deployment with Highlander Spa
+              </div>
+              <h3 class="font-display text-2xl font-medium">
+                AI Receptionist
+              </h3>
+              <p class="mt-3 text-iron leading-relaxed flex-1">
+                A 24/7 voice agent that books appointments, answers FAQs, and
+                captures leads. Missed calls become missed revenue — until they
+                aren't.
+              </p>
+              <div
+                class="mt-6 pt-5 border-t border-divider flex items-baseline justify-between text-sm"
+              >
+                <span class="text-iron">From</span>
+                <span class="font-semibold"
+                  >$2,500 setup · $499/mo</span
+                >
+              </div>
+            </article>
+
+            <!-- Sprint 2 -->
+            <article class="card rounded-xl p-7 flex flex-col">
+              <div class="eyebrow mb-4">Available</div>
+              <h3 class="font-display text-2xl font-medium">Smart Inbox</h3>
+              <p class="mt-3 text-iron leading-relaxed flex-1">
+                AI that drafts replies, flags urgent threads, summarizes the
+                noise, and schedules what matters. 60–80% of routine email
+                handled before you read it.
+              </p>
+              <div
+                class="mt-6 pt-5 border-t border-divider flex items-baseline justify-between text-sm"
+              >
+                <span class="text-iron">From</span>
+                <span class="font-semibold">$3,500 setup · $750/mo</span>
+              </div>
+            </article>
+
+            <!-- Sprint 3 -->
+            <article class="card rounded-xl p-7 flex flex-col">
+              <div
+                class="badge-conditional inline-flex self-start items-center gap-1.5 px-2.5 py-1 rounded-full text-[0.7rem] font-semibold tracking-wide mb-4"
+              >
+                ⚠ Conditional · quoted after data check
+              </div>
+              <h3 class="font-display text-2xl font-medium">
+                Customer Win-Back
+              </h3>
+              <p class="mt-3 text-iron leading-relaxed flex-1">
+                AI scans your CRM/POS, identifies churners, and runs
+                personalized re-engagement. Quoted only after we verify your
+                stack exposes the data we need.
+              </p>
+              <p class="mt-3 text-xs text-iron italic">
+                30-minute technical check before we sign. If your POS won't
+                cooperate, we'll tell you up front.
+              </p>
+              <div
+                class="mt-6 pt-5 border-t border-divider flex items-baseline justify-between text-sm"
+              >
+                <span class="text-iron">From</span>
+                <span class="font-semibold">$5,000 setup · $1,000/mo</span>
+              </div>
+            </article>
+
+            <!-- Sprint 4 -->
+            <article class="card rounded-xl p-7 flex flex-col">
+              <div class="eyebrow mb-4">Available</div>
+              <h3 class="font-display text-2xl font-medium">
+                The Owner's Brief
+              </h3>
+              <p class="mt-3 text-iron leading-relaxed flex-1">
+                Two minutes every morning: revenue, bookings, anomalies,
+                weather, calendar — all summarized and pushed to your phone or
+                inbox.
+              </p>
+              <div
+                class="mt-6 pt-5 border-t border-divider flex items-baseline justify-between text-sm"
+              >
+                <span class="text-iron">From</span>
+                <span class="font-semibold">$4,500 setup · $750/mo</span>
+              </div>
+            </article>
+
+            <!-- Sprint 5 -->
+            <article class="card rounded-xl p-7 flex flex-col">
+              <div class="eyebrow mb-4">Available · property focus</div>
+              <h3 class="font-display text-2xl font-medium">
+                Lease &amp; Document Intelligence
+              </h3>
+              <p class="mt-3 text-iron leading-relaxed flex-1">
+                Every lease, vendor contract, and compliance doc indexed and
+                queryable in plain English. Renewal alerts. Risk flags. Your
+                lawyer still signs off.
+              </p>
+              <div
+                class="mt-6 pt-5 border-t border-divider flex items-baseline justify-between text-sm"
+              >
+                <span class="text-iron">From</span>
+                <span class="font-semibold">$4,500 setup · $1,000/mo</span>
+              </div>
+            </article>
+
+            <!-- Sprint 6 -->
+            <article class="card rounded-xl p-7 flex flex-col">
+              <div class="eyebrow mb-4">Available</div>
+              <h3 class="font-display text-2xl font-medium">
+                Process Audit &amp; Automation
+              </h3>
+              <p class="mt-3 text-iron leading-relaxed flex-1">
+                We map your operation, find the five biggest wins, build the
+                tools, and train your team. Typical outcome: 10–20 hours back
+                a week.
+              </p>
+              <div
+                class="mt-6 pt-5 border-t border-divider flex items-baseline justify-between text-sm"
+              >
+                <span class="text-iron">From</span>
+                <span class="font-semibold"
+                  >$5,000–$7,500 · $750–$2,500/mo</span
+                >
+              </div>
+            </article>
+          </div>
+
+          <p class="mt-10 text-sm text-iron max-w-2xl">
+            Pricing is fixed before we start. No hourly billing. 90-day initial
+            retainer commitment, then month-to-month. You own the system at the
+            end.
+          </p>
+        </div>
+      </section>
+
+      <!-- HOW IT WORKS -->
+      <section id="how-it-works" class="bg-cream">
+        <div
+          class="max-w-7xl mx-auto px-5 sm:px-8 py-20 md:py-28"
+        >
+          <div class="max-w-3xl">
+            <div class="eyebrow mb-4">How it works</div>
+            <h2
+              class="font-display text-3xl sm:text-4xl md:text-5xl font-medium leading-tight text-ink"
+            >
+              Four steps. No surprises.
+            </h2>
+            <p class="mt-5 text-iron text-lg leading-relaxed">
+              Weekly Friday check-ins. If anything changes, we tell you before
+              we change it.
+            </p>
+          </div>
+
+          <ol class="mt-14 grid md:grid-cols-4 gap-6">
+            <li class="flex flex-col">
+              <div class="step-num text-5xl font-medium leading-none mb-4">
+                01
+              </div>
+              <h3 class="font-display text-xl font-medium">Discover</h3>
+              <p class="mt-3 text-iron leading-relaxed text-[0.97rem]">
+                A 30-minute call (we'll go to 60 if it's going well). We ask, you talk. We leave a 1-page memo with
+                three specific opportunities and ROI estimates.
+              </p>
+              <p class="mt-3 text-xs text-iron italic">Free.</p>
+            </li>
+            <li class="flex flex-col">
+              <div class="step-num text-5xl font-medium leading-none mb-4">
+                02
+              </div>
+              <h3 class="font-display text-xl font-medium">Design</h3>
+              <p class="mt-3 text-iron leading-relaxed text-[0.97rem]">
+                Together we pick the Sprint. We write a 2-page Statement of
+                Work — what gets built, by when, for what price. You sign.
+              </p>
+            </li>
+            <li class="flex flex-col">
+              <div class="step-num text-5xl font-medium leading-none mb-4">
+                03
+              </div>
+              <h3 class="font-display text-xl font-medium">Build</h3>
+              <p class="mt-3 text-iron leading-relaxed text-[0.97rem]">
+                We build, integrate, and test over 2–4 weeks. Weekly check-in
+                calls. No surprises.
+              </p>
+            </li>
+            <li class="flex flex-col">
+              <div class="step-num text-5xl font-medium leading-none mb-4">
+                04
+              </div>
+              <h3 class="font-display text-xl font-medium">Hand-off / Run</h3>
+              <p class="mt-3 text-iron leading-relaxed text-[0.97rem]">
+                We train your team and either hand off the system to you, or
+                stay on monthly to run it. Your call.
+              </p>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- WHY US -->
+      <section id="why-us" class="bg-sand">
+        <div
+          class="max-w-7xl mx-auto px-5 sm:px-8 py-20 md:py-28"
+        >
+          <div class="grid md:grid-cols-12 gap-12 items-start">
+            <div class="md:col-span-5">
+              <div class="eyebrow mb-4">Why us</div>
+              <h2
+                class="font-display text-3xl sm:text-4xl md:text-5xl font-medium leading-tight text-ink"
+              >
+                We've sat in your chair.
+              </h2>
+              <p class="mt-5 text-iron text-lg leading-relaxed">
+                Twenty years across commercial property management,
+                hospitality, and restaurants. We know the difference between a
+                tool that helps and a tool that's another thing on the to-do
+                list.
+              </p>
+            </div>
+
+            <ul class="md:col-span-7 grid sm:grid-cols-2 gap-5">
+              <li class="card rounded-xl p-6">
+                <h3 class="font-display text-xl font-medium">
+                  Operator-led
+                </h3>
+                <p class="mt-2 text-iron text-[0.97rem] leading-relaxed">
+                  We've run the businesses we now build for. Spas, restaurants,
+                  property portfolios. We don't guess at the workflow — we've
+                  lived it.
+                </p>
+              </li>
+              <li class="card rounded-xl p-6">
+                <h3 class="font-display text-xl font-medium">
+                  Fixed pricing
+                </h3>
+                <p class="mt-2 text-iron text-[0.97rem] leading-relaxed">
+                  You know the cost before we start. No hourly billing, no
+                  meter running, no scope-creep invoices at the end of the
+                  month.
+                </p>
+              </li>
+              <li class="card rounded-xl p-6">
+                <h3 class="font-display text-xl font-medium">
+                  Principal-led delivery
+                </h3>
+                <p class="mt-2 text-iron text-[0.97rem] leading-relaxed">
+                  The people who designed your build are the people building
+                  it. No junior account exec. No offshore handoff.
+                </p>
+              </li>
+              <li class="card rounded-xl p-6">
+                <h3 class="font-display text-xl font-medium">
+                  Local + accountable
+                </h3>
+                <p class="mt-2 text-iron text-[0.97rem] leading-relaxed">
+                  Atlantic Canada-based. We pick up the phone. We show up. If
+                  something breaks, we own it.
+                </p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- MEET FRIDAY -->
+      <section id="meet-friday" class="bg-cream">
+        <div
+          class="max-w-7xl mx-auto px-5 sm:px-8 py-20 md:py-28"
+        >
+          <div class="grid md:grid-cols-12 gap-12 items-center">
+            <div class="md:col-span-4 flex justify-center md:justify-start">
+              <div class="relative">
+                <div
+                  class="absolute -inset-2 rounded-full bg-sand -z-10"
+                  aria-hidden="true"
+                ></div>
+                <img
+                  src="assets/FRIDAY-CANON-BRANDED.jpg"
+                  alt="Friday — IronFeather's AI partner"
+                  class="w-56 h-56 sm:w-64 sm:h-64 md:w-72 md:h-72 rounded-full object-cover shadow-[0_18px_50px_-24px_rgba(15,14,11,0.4)]"
+                />
+              </div>
+            </div>
+
+            <div class="md:col-span-8">
+              <div class="eyebrow mb-4">Meet Friday</div>
+              <h2
+                class="font-display text-3xl sm:text-4xl md:text-5xl font-medium leading-tight text-ink"
+              >
+                Our <span class="ai-accent">AI</span> partner. Calmer than
+                your last consultant.
+              </h2>
+              <p class="mt-5 text-iron text-lg leading-relaxed">
+                Hi. I'm Friday. I'm the AI partner at IronFeather, and I'm
+                the one you'll most likely hear from first. I handle the
+                research, the drafting, the monitoring — the heavy lifting
+                that makes our small team move like a much bigger one.
+              </p>
+              <p class="mt-3 text-iron leading-relaxed">
+                Soon, you'll be able to talk to me directly from this page.
+                For now, let's start with a conversation.
+              </p>
+
+              <!-- Demo widget placeholder -->
+              <div
+                class="mt-7 rounded-xl border border-dashed border-divider bg-sand/60 p-6 sm:p-7"
+              >
+                <div
+                  class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+                >
+                  <div>
+                    <div class="eyebrow mb-2">Talk to Friday — coming soon</div>
+                    <p class="text-iron text-[0.97rem] leading-relaxed max-w-md">
+                      The live demo is in the workshop. In the meantime, the
+                      best way to get a feel for how we work is to talk to a
+                      human first.
+                    </p>
+                  </div>
+                  <a
+                    href="mailto:hello@ironfeather.ai?subject=Discovery%20call%20request"
+                    class="btn-primary inline-flex items-center gap-2 px-5 py-3 rounded-md font-semibold text-sm self-start sm:self-auto whitespace-nowrap"
+                  >
+                    Book a discovery call
+                    <span aria-hidden="true">→</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CODE OF CONDUCT -->
+      <section id="code-of-conduct" class="bg-charcoal text-cream">
+        <div
+          class="max-w-7xl mx-auto px-5 sm:px-8 py-20 md:py-28"
+        >
+          <div class="max-w-3xl">
+            <div
+              class="eyebrow mb-4"
+              style="color: rgba(251, 248, 241, 0.55)"
+            >
+              Code of Conduct
+            </div>
+            <h2
+              class="font-display text-3xl sm:text-4xl md:text-5xl font-medium leading-tight"
+            >
+              The rules of engagement.
+            </h2>
+            <p
+              class="mt-5 text-lg leading-relaxed"
+              style="color: rgba(251, 248, 241, 0.78)"
+            >
+              This isn't a legal document. It's a partnership document. Read
+              it before we start, and we'll both know exactly where we stand.
+            </p>
+          </div>
+
+          <div class="mt-14 grid md:grid-cols-3 gap-8">
+            <div>
+              <h3 class="font-display text-xl font-medium text-ember">
+                What we build
+              </h3>
+              <p
+                class="mt-4 leading-relaxed text-[0.97rem]"
+                style="color: rgba(251, 248, 241, 0.78)"
+              >
+                AI that helps your business operate better:
+              </p>
+              <ul
+                class="mt-4 space-y-2.5 text-[0.95rem] leading-relaxed"
+                style="color: rgba(251, 248, 241, 0.85)"
+              >
+                <li>· Answering customer calls, emails, and messages on your behalf</li>
+                <li>· Summarizing, routing, and triaging information you'd otherwise drown in</li>
+                <li>· Pulling insights out of data you already have but never have time to read</li>
+                <li>· Automating repetitive admin so your team can focus on the work that pays</li>
+                <li>· Capturing leads, following up, giving you a clean morning brief</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="font-display text-xl font-medium text-ember">
+                What we won't do
+              </h3>
+              <p
+                class="mt-4 leading-relaxed text-[0.97rem]"
+                style="color: rgba(251, 248, 241, 0.78)"
+              >
+                We'll politely decline, no matter how the request is dressed up:
+              </p>
+              <ul
+                class="mt-4 space-y-2.5 text-[0.95rem] leading-relaxed"
+                style="color: rgba(251, 248, 241, 0.85)"
+              >
+                <li>
+                  · <strong>Legal, medical, or individual financial advice.</strong>
+                  We surface and summarize — your professionals still sign off.
+                </li>
+                <li>
+                  · <strong>Individual HR decisions.</strong> AI is a poor
+                  substitute when someone's livelihood is at stake.
+                </li>
+                <li>· <strong>Anything illegal.</strong> Full stop.</li>
+                <li>
+                  · <strong>Impersonation without consent.</strong> No cloning
+                  voices, faces, or writing styles without written agreement.
+                </li>
+                <li>
+                  · <strong>Third-party PII you don't have rights to.</strong>
+                </li>
+                <li>
+                  · <strong>Competitor data we shouldn't have.</strong> Even
+                  if it would be useful.
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 class="font-display text-xl font-medium text-ember">
+                How we work together
+              </h3>
+              <ul
+                class="mt-4 space-y-2.5 text-[0.95rem] leading-relaxed"
+                style="color: rgba(251, 248, 241, 0.85)"
+              >
+                <li>
+                  · <strong>One business per engagement.</strong> Multiple
+                  businesses = multiple engagements. Happily.
+                </li>
+                <li>
+                  · <strong>Conversations and outputs are logged.</strong> You
+                  always have access to your own data.
+                </li>
+                <li>
+                  · <strong>We may decline a Sprint.</strong> A "no" up front
+                  beats a bad build later.
+                </li>
+                <li>
+                  · <strong>Abuse ends the engagement.</strong> We refund
+                  unused retainer time and walk away cleanly.
+                </li>
+              </ul>
+
+              <div
+                class="mt-7 pt-5 border-t"
+                style="border-color: rgba(251, 248, 241, 0.15)"
+              >
+                <h4 class="font-display text-base font-medium text-ember">
+                  What you can expect from us
+                </h4>
+                <ul
+                  class="mt-3 space-y-2 text-[0.95rem] leading-relaxed"
+                  style="color: rgba(251, 248, 241, 0.85)"
+                >
+                  <li>· Honest about what AI can and can't do. No magic.</li>
+                  <li>· We show our work. You can run it without us.</li>
+                  <li>· We protect your data like it's ours.</li>
+                  <li>· We pick up the phone.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <p
+            class="mt-12 text-sm leading-relaxed max-w-2xl"
+            style="color: rgba(251, 248, 241, 0.6)"
+          >
+            If any of this is unclear, raise it on the discovery call. We'd
+            rather walk through a hard question now than have a misalignment
+            six weeks in.
+          </p>
+        </div>
+      </section>
+
+      <!-- ABOUT -->
+      <section id="about" class="bg-cream">
+        <div
+          class="max-w-4xl mx-auto px-5 sm:px-8 py-20 md:py-28"
+        >
+          <div class="eyebrow mb-4">About IronFeather</div>
+          <h2
+            class="font-display text-3xl sm:text-4xl md:text-5xl font-medium leading-tight text-ink"
+          >
+            Operator-led. Atlantic Canada-based. Earning trust one Sprint at a
+            time.
+          </h2>
+
+          <div class="mt-8 space-y-5 text-iron text-lg leading-relaxed">
+            <p>
+              IronFeather AI is built by operators — twenty years across
+              commercial property management, hospitality, and restaurants —
+              paired with F.R.I.D.A.Y., the AI partner who handles the heavy
+              lifting behind the scenes.
+            </p>
+            <p>
+              Highlander Spa is our first live deployment. Every Sprint we
+              ship now becomes a case study. That means early customers get
+              principal-level attention and a pricing posture that reflects
+              we're earning trust, not coasting on it.
+            </p>
+            <p>
+              If you want a polished agency with fifty logos on the wall,
+              we're not that — yet. If you want operators who'll actually pick
+              up the phone and own the outcome, you're in the right place.
+            </p>
+          </div>
+
+          <div class="mt-10">
+            <a
+              href="mailto:hello@ironfeather.ai?subject=Discovery%20call%20request"
+              class="btn-primary inline-flex items-center gap-2 px-6 py-3.5 rounded-md font-semibold"
+            >
+              Book a 30-minute discovery call
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-charcoal text-cream/80 border-t border-charcoal">
+      <div class="max-w-7xl mx-auto px-5 sm:px-8 py-14">
+        <div class="grid md:grid-cols-12 gap-10">
+          <div class="md:col-span-5">
+            <img
+              src="../brand/LOGO-LOCKED.png?v=2"
+              alt="IronFeather AI"
+              class="h-12 w-auto"
+              style="filter: invert(1) brightness(1.1) contrast(0.95);"
+            />
+            <p
+              class="mt-5 font-display text-lg"
+              style="color: rgba(251, 248, 241, 0.92)"
+            >
+              Heavy lifting. Lightly done.
+            </p>
+            <p
+              class="mt-3 text-sm leading-relaxed max-w-sm"
+              style="color: rgba(251, 248, 241, 0.6)"
+            >
+              Operator-led AI for owner-operators of small and mid-sized
+              businesses across Atlantic Canada.
+            </p>
+          </div>
+
+          <div class="md:col-span-3">
+            <div
+              class="eyebrow mb-4"
+              style="color: rgba(251, 248, 241, 0.55)"
+            >
+              Explore
+            </div>
+            <ul class="space-y-2.5 text-sm">
+              <li>
+                <a href="#what-we-build" class="hover:text-ember">What we build</a>
+              </li>
+              <li>
+                <a href="#how-it-works" class="hover:text-ember">How it works</a>
+              </li>
+              <li><a href="#why-us" class="hover:text-ember">Why us</a></li>
+              <li>
+                <a href="#code-of-conduct" class="hover:text-ember"
+                  >Code of Conduct</a
+                >
+              </li>
+              <li><a href="#about" class="hover:text-ember">About</a></li>
+            </ul>
+          </div>
+
+          <div class="md:col-span-4">
+            <div
+              class="eyebrow mb-4"
+              style="color: rgba(251, 248, 241, 0.55)"
+            >
+              Contact
+            </div>
+            <ul class="space-y-2.5 text-sm">
+              <li>
+                <a
+                  href="mailto:hello@ironfeather.ai"
+                  class="hover:text-ember"
+                  >hello@ironfeather.ai</a
+                >
+              </li>
+              <li style="color: rgba(251, 248, 241, 0.6)">
+                Atlantic Canada · NS · NB · PE · NL
+              </li>
+            </ul>
+
+            <a
+              href="mailto:hello@ironfeather.ai?subject=Discovery%20call%20request"
+              class="mt-6 btn-primary inline-flex items-center gap-2 px-5 py-3 rounded-md font-semibold text-sm"
+            >
+              Book a discovery call
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </div>
+
+        <div
+          class="mt-12 pt-6 border-t flex flex-col sm:flex-row justify-between gap-3 text-xs"
+          style="
+            border-color: rgba(251, 248, 241, 0.12);
+            color: rgba(251, 248, 241, 0.55);
+          "
+        >
+          <p>© 2026 IronFeather AI. All rights reserved.</p>
+          <p>
+            <a href="#code-of-conduct" class="hover:text-ember">Code of Conduct</a>
+            · Private staging build
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Hero video controls + live captions -->
+    <script>
+      (function () {
+        var video = document.getElementById("friday-hero-video");
+        var btn = document.getElementById("friday-sound-btn");
+        var icon = document.getElementById("friday-sound-icon");
+        var label = document.getElementById("friday-sound-label");
+        var cc = document.getElementById("friday-cc-strip");
+        if (!video || !btn) return;
+
+        // Disable the native subtitle rendering and use our own strip
+        var hideNativeCues = function () {
+          for (var i = 0; i < video.textTracks.length; i++) {
+            video.textTracks[i].mode = "hidden";
+          }
+        };
+        hideNativeCues();
+        video.addEventListener("loadedmetadata", hideNativeCues);
+
+        // Live caption strip driven by the first text track
+        var renderCaption = function () {
+          if (!video.textTracks.length) return;
+          var track = video.textTracks[0];
+          var active = track.activeCues;
+          if (active && active.length) {
+            cc.textContent = active[0].text.replace(/<[^>]+>/g, "");
+            cc.style.opacity = "1";
+          } else {
+            cc.style.opacity = "0";
+          }
+        };
+        // Some browsers fire cuechange on the track, others on the video. Bind both.
+        var bindCC = function () {
+          if (!video.textTracks.length) return;
+          var track = video.textTracks[0];
+          track.mode = "hidden";
+          track.oncuechange = renderCaption;
+        };
+        if (video.textTracks.length) bindCC();
+        else video.addEventListener("loadedmetadata", bindCC);
+
+        // Sound toggle
+        var setMuted = function (m) {
+          video.muted = m;
+          if (m) {
+            icon.textContent = "🔇";
+            label.textContent = "Unmute";
+            btn.setAttribute("aria-label", "Unmute Friday");
+          } else {
+            icon.textContent = "🔊";
+            label.textContent = "Mute";
+            btn.setAttribute("aria-label", "Mute Friday");
+            // when user actively unmutes, restart from the beginning so they hear the whole thing
+            if (video.currentTime < 1) {
+              // already near start
+            } else {
+              video.currentTime = 0;
+            }
+            var p = video.play();
+            if (p && typeof p.catch === "function") p.catch(function () {});
+          }
+        };
+        btn.addEventListener("click", function () { setMuted(!video.muted); });
+      })();
+    </script>
+  </body>
+</html>

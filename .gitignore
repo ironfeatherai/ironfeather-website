@@ -1,0 +1,16 @@
+# Backup files
+*.bak
+index-original.html.bak
+
+# Comparison/test videos (not needed for production)
+comparison-*.mp4
+
+# System files
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Editor files
+.vscode/
+.idea/
