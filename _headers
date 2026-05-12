@@ -1,0 +1,11 @@
+/assets/*
+  Content-Type: auto
+
+/*.png
+  Content-Type: image/png
+
+/*.jpg
+  Content-Type: image/jpeg
+
+/*.mp4
+  Content-Type: video/mp4
