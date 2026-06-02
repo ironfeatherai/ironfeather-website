@@ -315,20 +315,12 @@
                   Your browser doesn't support video. Friday says hi anyway.
                 </video>
 
-                <!-- Meet badge -->
-                <div
-                  class="absolute top-4 left-4 bg-cream/95 backdrop-blur border border-divider rounded-md px-3 py-2 text-xs pointer-events-none"
-                >
-                  <span class="eyebrow block leading-none mb-0.5">Meet</span>
-                  <span class="font-display text-base leading-none">F.R.I.D.A.Y</span>
-                </div>
-
-                <!-- Unmute / Play controls -->
+                <!-- Unmute / Play controls (top-left to avoid covering the IronFeather logo top-right and the captions bottom) -->
                 <button
                   id="friday-sound-btn"
                   type="button"
                   aria-label="Unmute Friday"
-                  class="absolute bottom-4 right-4 inline-flex items-center gap-2 bg-ink/85 text-cream backdrop-blur px-4 py-2.5 rounded-full text-sm font-semibold shadow-lg hover:bg-ember transition-colors"
+                  class="absolute top-4 left-4 inline-flex items-center gap-2 bg-ink/85 text-cream backdrop-blur px-3 py-2 rounded-full text-xs font-semibold shadow-lg hover:bg-ember transition-colors"
                 >
                   <span id="friday-sound-icon" aria-hidden="true">🔇</span>
                   <span id="friday-sound-label">Unmute</span>
