@@ -1049,46 +1049,14 @@
       </div>
     </footer>
 
-    <!-- Hero video controls + live captions -->
+    <!-- Hero video controls (captions are now burned into the MP4) -->
     <script>
       (function () {
         var video = document.getElementById("friday-hero-video");
         var btn = document.getElementById("friday-sound-btn");
         var icon = document.getElementById("friday-sound-icon");
         var label = document.getElementById("friday-sound-label");
-        var cc = document.getElementById("friday-cc-strip");
         if (!video || !btn) return;
-
-        // Disable the native subtitle rendering and use our own strip
-        var hideNativeCues = function () {
-          for (var i = 0; i < video.textTracks.length; i++) {
-            video.textTracks[i].mode = "hidden";
-          }
-        };
-        hideNativeCues();
-        video.addEventListener("loadedmetadata", hideNativeCues);
-
-        // Live caption strip driven by the first text track
-        var renderCaption = function () {
-          if (!video.textTracks.length) return;
-          var track = video.textTracks[0];
-          var active = track.activeCues;
-          if (active && active.length) {
-            cc.textContent = active[0].text.replace(/<[^>]+>/g, "");
-            cc.style.opacity = "1";
-          } else {
-            cc.style.opacity = "0";
-          }
-        };
-        // Some browsers fire cuechange on the track, others on the video. Bind both.
-        var bindCC = function () {
-          if (!video.textTracks.length) return;
-          var track = video.textTracks[0];
-          track.mode = "hidden";
-          track.oncuechange = renderCaption;
-        };
-        if (video.textTracks.length) bindCC();
-        else video.addEventListener("loadedmetadata", bindCC);
 
         // Sound toggle
         var setMuted = function (m) {
